@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  nginx:
+    build: docker/nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www/dumpit
+
+  dumpit:
+    build: docker/php-fpm
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: password
+      XDEBUG_CONFIG: "remote_host=${HOST_IP}"
+      PHP_IDE_CONFIG: "serverName=${HOST_SERVER_NAME}"
+    ports:
+      - "9003:9003"
+    volumes:
+      - ./:/var/www/dumpit
+
+  postgres:
+    image: postgres:13-alpine
+    environment:
+      - POSTGRES_DB=dumpit
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/docker-entrypoint-initdb.d
+    
+volumes:
+  db_data:
