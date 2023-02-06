@@ -1,0 +1,4 @@
+suites:
+    reporting_suite:
+        namespace: DumpIt
+        psr4_prefix: DumpIt
