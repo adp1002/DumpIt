@@ -7,8 +7,10 @@ RUN apt update && apt install -y libpq-dev && \
     docker-php-ext-enable xdebug
 
 COPY php.ini /usr/local/etc/php/conf.d/
+COPY xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 VOLUME /var/www/dumpit
+WORKDIR /var/www/dumpit
 
 EXPOSE 9000
 

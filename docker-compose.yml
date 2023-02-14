@@ -14,10 +14,6 @@ services:
       DATABASE_HOST: postgres
       DATABASE_USER: postgres
       DATABASE_PASSWORD: password
-      XDEBUG_CONFIG: "remote_host=${HOST_IP}"
-      PHP_IDE_CONFIG: "serverName=${HOST_SERVER_NAME}"
-    ports:
-      - "9003:9003"
     volumes:
       - ./:/var/www/dumpit
 

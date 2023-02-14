@@ -1,0 +1,10 @@
+default:
+    suites:
+        default:
+            contexts:
+                - DumpIt\Tests\Behat\DemoContext
+
+    extensions:
+        FriendsOfBehat\SymfonyExtension:
+            kernel:
+                class: DumpIt\Api\Kernel
