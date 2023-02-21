@@ -7,6 +7,8 @@ services:
       - "80:80"
     volumes:
       - ./:/var/www/dumpit
+    networks:
+      - dumpit
 
   dumpit:
     build: docker/php-fpm
@@ -16,9 +18,11 @@ services:
       DATABASE_PASSWORD: password
     volumes:
       - ./:/var/www/dumpit
+    networks:
+      - dumpit
 
   postgres:
-    image: postgres:13-alpine
+    image: postgres:15-alpine
     environment:
       - POSTGRES_DB=dumpit
       - POSTGRES_PASSWORD=password
@@ -27,6 +31,12 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/docker-entrypoint-initdb.d
+    networks:
+      - dumpit
+
+networks:
+  dumpit:
+    driver: bridge
     
 volumes:
   db_data:

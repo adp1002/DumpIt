@@ -1,29 +1,23 @@
 {
-    "name": "item-checker/core",
+    "name": "dumpit/core",
     "description": "DumpIt core",
     "type": "project",
     "require": {
-        "php": "^8.1"
+        "php": "^8.1",
+        "doctrine/orm": "^2.14",
+        "league/fractal": "^0.20.1"
     },
     "require-dev": {
         "phpspec/phpspec": "^7.2"
     },
     "autoload": {
         "psr-4": {
-            "DumpIt\\Application\\": "src/Application",
-            "DumpIt\\Domain\\": "src/Domain",
-            "DumpIt\\Infrastructure\\": "src/Infrastructure"
+            "DumpIt\\": "src"
         }
     },
     "extra": {
         "branch-alias": {
             "dev-main": "1.0.x-dev"
         }
-    },
-    "authors": [
-        {
-            "name": "adp1002",
-            "email": "alvarodel98@hotmail.com"
-        }
-    ]
+    }
 }

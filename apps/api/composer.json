@@ -13,11 +13,17 @@
         "php": ">=8.1",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "item-checker/core": "1.0.x-dev",
+        "doctrine/annotations": "^2.0",
+        "doctrine/doctrine-bundle": "^2.8",
+        "doctrine/doctrine-migrations-bundle": "^3.2",
+        "doctrine/orm": "^2.14",
+        "dumpit/core": "*",
         "symfony/console": "6.2.*",
         "symfony/dotenv": "6.2.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.2.*",
+        "symfony/messenger": "6.2.*",
+        "symfony/property-access": "6.2.*",
         "symfony/runtime": "6.2.*",
         "symfony/yaml": "6.2.*"
     },
@@ -35,7 +41,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "DumpIt\\Tests\\": "tests/"
+            "DumpIt\\Api\\Tests\\": "tests/",
+            "DumpIt\\Api\\Fixtures\\": "fixtures/"
         }
     },
     "replace": {
@@ -69,8 +76,10 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.4",
         "friends-of-behat/mink-browserkit-driver": "^1.6",
         "friends-of-behat/mink-extension": "^2.7",
-        "friends-of-behat/symfony-extension": "^2.4"
+        "friends-of-behat/symfony-extension": "^2.4",
+        "soyuka/contexts": "^3.3"
     }
 }

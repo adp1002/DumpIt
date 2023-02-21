@@ -1,4 +1,5 @@
 suites:
-    reporting_suite:
+    core_suite:
         namespace: DumpIt
         psr4_prefix: DumpIt
+        spec_prefix: tests

@@ -1,10 +1,21 @@
 default:
     suites:
         default:
+            paths:
+                - '%paths.base%/features'
             contexts:
-                - DumpIt\Tests\Behat\DemoContext
+                - behatch:context:json
+                - behatch:context:rest
 
     extensions:
         FriendsOfBehat\SymfonyExtension:
             kernel:
                 class: DumpIt\Api\Kernel
+            bootstrap: 'config/bootstrap.php'
+
+        Behat\MinkExtension:
+            sessions:
+                symfony:
+                    symfony: ~
+
+        Behatch\Extension: ~
