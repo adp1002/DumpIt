@@ -2,6 +2,6 @@
 
 namespace DumpIt\Shared\Infrastructure\Bus\Query;
 
-interface QueryBusHandler
+interface QueryHandler
 {
 }

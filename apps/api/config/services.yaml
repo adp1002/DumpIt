@@ -11,10 +11,17 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
+        # bind:
+        #     'string $poesessid': '%env(POESESSID)%'
+        #     'string $poeUsername': '%env(POE_USERNAME)%'
+
     _instanceof:
-        DumpIt\Shared\Infrastructure\Bus\Query\QueryBusHandler:
+        DumpIt\Shared\Infrastructure\Bus\Query\QueryHandler:
             tags: 
                 - { name: messenger.message_handler, bus: query.bus }
+        DumpIt\Shared\Infrastructure\Bus\Command\CommandHandler:
+            tags: 
+                - { name: messenger.message_handler, bus: command.bus }
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -35,3 +42,18 @@ services:
         resource: '%kernel.project_dir%/fixtures'
 
     League\Fractal\Manager: ~
+ 
+    DumpIt\StashFilter\Domain\Filter\FilterRepositoryInterface:
+        class: DumpIt\StashFilter\Infrastructure\Persistence\Filter\FilterRepository
+    
+    DumpIt\StashFilter\Domain\Stash\ModRepositoryInterface:
+        class: DumpIt\StashFilter\Infrastructure\Persistence\Stash\ModRepository
+
+    DumpIt\StashFilter\Domain\Stash\TabRepositoryInterface:
+        class: DumpIt\StashFilter\Infrastructure\Persistence\Stash\TabRepository
+
+    DumpIt\StashFilter\Domain\Stash\ItemRepositoryInterface:
+        class: DumpIt\StashFilter\Infrastructure\Persistence\Stash\ItemRepository
+
+    DumpIt\StashFilter\Domain\User\UserRepositoryInterface:
+        class: DumpIt\StashFilter\Infrastructure\Persistence\User\UserRepository

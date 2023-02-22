@@ -15,7 +15,7 @@ class QueryBus
         $this->messageBus = $queryBus;
     }
 
-    public function query(Event $query): ResourceAbstract
+    public function query(Query $query): ResourceAbstract
     {
         return $this->handle($query);
     }

@@ -5,7 +5,9 @@
     "require": {
         "php": "^8.1",
         "doctrine/orm": "^2.14",
-        "league/fractal": "^0.20.1"
+        "league/fractal": "^0.20.1",
+        "ramsey/uuid-doctrine": "^2.0",
+        "symfony/http-client": "^6.2"
     },
     "require-dev": {
         "phpspec/phpspec": "^7.2"

@@ -20,6 +20,8 @@ services:
       - ./:/var/www/dumpit
     networks:
       - dumpit
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   postgres:
     image: postgres:15-alpine

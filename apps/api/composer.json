@@ -1,4 +1,6 @@
 {
+    "name": "dumpit/api",
+    "description": "DumpIt API",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "dev",
@@ -17,7 +19,7 @@
         "doctrine/doctrine-bundle": "^2.8",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.14",
-        "dumpit/core": "*",
+        "dumpit/core": "~1.0.x-dev",
         "symfony/console": "6.2.*",
         "symfony/dotenv": "6.2.*",
         "symfony/flex": "^2",
