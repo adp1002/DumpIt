@@ -3,7 +3,7 @@
 namespace DumpIt\StashFilter\Application\Stash;
 
 use DumpIt\Shared\Infrastructure\Bus\Query\QueryHandler;
-use DumpIt\StashFilter\Domain\Stash\Tab;
+use DumpIt\StashFilter\Domain\Stash\TabTransformer;
 use League\Fractal\Resource\Collection;
 use DumpIt\StashFilter\Domain\Stash\TabRepositoryInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -18,8 +18,8 @@ class GetTabsQueryHandler implements QueryHandler
         $this->tabs = $tabs;
     }
 
-	public function __invoke(GetTabsQuery $getTabsQuery): Collection
+	public function __invoke(GetTabsQuery $query): Collection
     {
-        return new Collection($this->tabs->byUser($getTabsQuery->userId()), new TabTransformer());
+        return new Collection($this->tabs->byUser($query->userId()), new TabTransformer());
 	}
 }

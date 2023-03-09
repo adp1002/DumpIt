@@ -6,5 +6,5 @@ interface UserRepositoryInterface
 {
     public function byId(string $userId): User;
 
-    public function registerUser(string $userId, string $username, string $realm, string $token, string $type): void;
+    public function registerUser(string $userId, string $username, string $realm, string $token, string $type): User;
 }

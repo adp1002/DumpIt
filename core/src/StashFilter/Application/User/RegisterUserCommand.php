@@ -1,42 +1,30 @@
 <?php declare(strict_types=1);
 
 namespace DumpIt\StashFilter\Application\User;
+
 use DumpIt\Shared\Infrastructure\Bus\Command\Command;
 
 class RegisterUserCommand implements Command
 {
-    private $userId;
+    private string $username;
 
-    private $username;
+    private string $token;
 
-    private $realm;
+    private string $type;
 
-    private $token;
-
-    private $type;
-
-    public function __construct($userId, $username, $realm, $token, $type)
+    private string|null $userId;
+   
+    public function __construct(string $username, string $token, string $type, string|null $userId = null)
     {
-        $this->userId = $userId;
         $this->username = $username;
-        $this->realm = $realm;
         $this->token = $token;
         $this->type = $type;
-    }
-
-    public function userId(): string
-    {
-        return $this->userId;
+        $this->userId = $userId;
     }
 
     public function username(): string
     {
         return $this->username;
-    }
-
-    public function realm(): string
-    {
-        return $this->realm;
     }
 
     public function token(): string
@@ -47,5 +35,10 @@ class RegisterUserCommand implements Command
     public function type(): string
     {
         return $this->type;
+    }
+
+    public function userId(): string|null
+    {
+        return $this->userId;
     }
 }

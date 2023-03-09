@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace DumpIt\StashFilter\Infrastructure\Stash;
+namespace DumpIt\StashFilter\Infrastructure\Persistence\Stash;
 
 use DumpIt\StashFilter\Domain\Stash\Tab;
 use DumpIt\StashFilter\Domain\Stash\TabRepositoryInterface;
@@ -21,7 +21,7 @@ class TabRepository extends ServiceEntityRepository implements TabRepositoryInte
 
     public function byUser(string $userId): array
     {
-        return $this->findBy(['user_id' => $userId]);
+        return $this->findBy(['userId' => $userId]);
     }
 
     public function byUserAndLeague(string $userId, string $leagueId): array

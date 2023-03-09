@@ -13,8 +13,8 @@ class CommandBus
         $this->messageBus = $commandBus;
     }
 
-    public function dispatch(Command $command): void
+    public function dispatch(Command $command)
     {
-        $this->messageBus->dispatch($command);
+        return $this->messageBus->dispatch($command);
     }
 }

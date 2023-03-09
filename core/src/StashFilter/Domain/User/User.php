@@ -39,6 +39,11 @@ class User
         $this->changeType($type);
     }
 
+    public function id(): string
+    {
+        return $this->id;
+    }
+
     public function token(): string
     {
         return $this->token;
@@ -62,10 +67,11 @@ class User
     public function changeType(string $type): self
     {
         if (!in_array($type, self::ALLOWED_TYPES)) {
-            //TODO Exception
             throw new \Exception();
         }
 
         $this->type = $type;
+
+        return $this;
     }
 }

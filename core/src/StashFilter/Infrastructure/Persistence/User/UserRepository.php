@@ -19,9 +19,13 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         return $this->find($userId);
     }
 
-    public function registerUser(string $userId, string $username, string $realm, string $token, string $type): void
+    public function registerUser(string $userId, string $username, string $realm, string $token, string $type): User
     {
-        $this->_em->persist(new User($userId, $username, $realm, $token, $type));
+        $user = new User($userId, $username, $realm, $token, $type);
+
+        $this->_em->persist($user);
         $this->_em->flush();
+
+        return $user;
     }
 }

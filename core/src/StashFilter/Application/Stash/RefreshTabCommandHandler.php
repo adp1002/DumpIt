@@ -41,7 +41,9 @@ class RefreshTabCommandHandler implements CommandHandler
 
     private function parseModValues(string $mod): array
     {
-        preg_match('/[+-]?\d+/', $mod, $values);
+        $values = [];
+
+        preg_match_all('/[+-]?\d+/', $mod, $values);
 
         $textA = preg_replace('/[+-]?\d+/', '#', $mod);
 

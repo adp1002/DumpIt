@@ -57,7 +57,7 @@ final class Version20230215190826 extends AbstractMigration
                 id VARCHAR(64) PRIMARY KEY,
                 name VARCHAR NOT NULL,
                 index SMALLINT NOT NULL,
-                league_id VARCHAR NOT NULL,
+                league_id VARCHAR NOT NULL REFERENCES dumpit.leagues (id),
                 last_sync TIMESTAMP,
                 user_id UUID REFERENCES dumpit.users (id)
             )'
@@ -104,8 +104,6 @@ final class Version20230215190826 extends AbstractMigration
         $this->addSql('CREATE INDEX item_ilvl_index ON dumpit.items (ilvl)');
         $this->addSql('CREATE INDEX item_base_type_index ON dumpit.items (base_type)');
 
-        $this->addSql('CREATE INDEX item_mods_index ON dumpit.item_mods (item_id, mod_id, value)');
-
         $this->addSql('CREATE INDEX filter_mods_index ON dumpit.filter_mods (filter_id)');
 
         $this->addSql('CREATE INDEX mod_text_index ON dumpit.mods (text)');
@@ -118,13 +116,6 @@ final class Version20230215190826 extends AbstractMigration
             'Migration can only be executed safely on \'postgresql\'.',
         );
 
-        $this->addSql('DROP TABLE dumpit.leagues');
-        $this->addSql('DROP TABLE dumpit.filter_mods');
-        $this->addSql('DROP TABLE dumpit.item_mods');
-        $this->addSql('DROP TABLE dumpit.mods');
-        $this->addSql('DROP TABLE dumpit.items');
-        $this->addSql('DROP TABLE dumpit.filters');
-        $this->addSql('DROP TABLE dumpit.tabs');
-        $this->addSql('DROP TABLE dumpit.users');
+        $this->addSql('DROP SCHEMA dumpit CASCADE');
     }
 }

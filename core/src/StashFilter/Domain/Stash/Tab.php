@@ -20,8 +20,8 @@ class Tab
     #[ORM\Column(type: 'integer')]
     private int $index;
 
-    #[ORM\Column(name: 'league', type: 'string')]
-    private string $league;
+    #[ORM\Column(name: 'league_id', type: 'string')]
+    private string $leagueId;
 
     #[ORM\Column(name: 'last_sync', type: 'datetime')]
     private \DateTime|null $lastSync;
@@ -33,14 +33,14 @@ class Tab
     #[ORM\Column(name: 'user_id', type: 'uuid')]
     private string $userId;
 
-    public function __construct(string $id, string $name, int $index, string $league, \DateTime|null $lastSync)
+    public function __construct(string $id, string $name, int $index, string $leagueId, \DateTime|null $lastSync)
     {
         $this->items = new ArrayCollection();
 
         $this->id = $id;
         $this->name = $name;
         $this->index = $index;
-        $this->league = $league;
+        $this->leagueId = $leagueId;
         $this->lastSync = $lastSync;
     }
 
@@ -59,9 +59,9 @@ class Tab
         return $this->index;
     }
 
-    public function league(): string
+    public function leagueId(): string
     {
-        return $this->league;
+        return $this->leagueId;
     }
 
     public function lastSync(): \DateTime|null

@@ -20,6 +20,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.14",
         "dumpit/core": "~1.0.x-dev",
+        "lexik/jwt-authentication-bundle": "^2.18",
         "symfony/console": "6.2.*",
         "symfony/dotenv": "6.2.*",
         "symfony/flex": "^2",

@@ -2,6 +2,7 @@
 
 namespace DumpIt\StashFilter\Infrastructure\HttpClient;
 
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PoeWebsiteHttpClient
@@ -11,6 +12,35 @@ class PoeWebsiteHttpClient
     public function __construct(HttpClientInterface $client)
     {
         $this->client = $client;
+    }
+
+    public function isTokenValid(string $username, string $token): string|null
+    {
+        $response = $this->client->request(
+            'GET',
+            'https://www.pathofexile.com/my-account',
+            $this->headers($token),
+        );
+
+        if (Response::HTTP_UNAUTHORIZED === $response->getStatusCode()) {
+            return null;
+        }
+
+        $matches = [];
+
+        preg_match_all(
+            '/((?<=A\({"name":")\w+)|((?<=,"realm":")\w+)/',
+            $response->getContent(),
+            $matches,
+        );
+
+        [$requestUsername, $realm] = $matches[0];
+
+        if ($username !== $requestUsername) {
+            return null;
+        }
+
+        return $realm;
     }
 
     public function getLeagues(): array
@@ -113,14 +143,12 @@ class PoeWebsiteHttpClient
 
     private function headers(string|null $poesessid): array
     {
-        $headers = [
-            'User-Agent' => 'DumpIt/0.1'
-        ];
+        $headers = [];
 
         if (null !== $poesessid) {
             $headers['Cookie'] = sprintf('POESESSID=%s', $poesessid);
         }
 
-        return $headers;
+        return ['headers' => $headers];
     }
 }
