@@ -13,7 +13,6 @@ class FilterTransformer extends TransformerAbstract
         return [
             'id' => $filter->id(),
             'name' => $filter->name(),
-            'publisher' => $filter->user()->username(),
         ];
     }
 

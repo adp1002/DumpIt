@@ -10,7 +10,7 @@ class ItemModTransformer extends TransformerAbstract
     {
         return [
             'mod' => $itemMod->mod()->text(),
-            'value' => $itemMod->value(),
+            'values' => $itemMod->values(),
         ];
     }
 }

@@ -7,6 +7,12 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PoeWebsiteHttpClient
 {
+    public const ACCOUNT_URL = 'https://www.pathofexile.com/my-account';
+    public const LEAGUE_URL = 'https://www.pathofexile.com/api/leagues';
+    public const MODS_URL = 'https://www.pathofexile.com/api/trade/data/stats';
+    public const TABS_URL = 'https://www.pathofexile.com/character-window/get-stash-items?accountName=%s&realm=%s&league=%s&tabs=1&tabIndex=0&tabs=true';
+    public const TAB_ITEMS_URL = 'https://www.pathofexile.com/character-window/get-stash-items?accountName=%s&realm=%s&league=%s&tabs=1&tabIndex=%d';
+    
     private HttpClientInterface $client;
 
     public function __construct(HttpClientInterface $client)
@@ -18,7 +24,7 @@ class PoeWebsiteHttpClient
     {
         $response = $this->client->request(
             'GET',
-            'https://www.pathofexile.com/my-account',
+            self::ACCOUNT_URL,
             $this->headers($token),
         );
 
@@ -45,7 +51,7 @@ class PoeWebsiteHttpClient
 
     public function getLeagues(): array
     {
-        $leagues = $this->client->request('GET', 'https://www.pathofexile.com/api/leagues')->toArray();
+        $leagues = $this->client->request('GET', self::LEAGUE_URL)->toArray();
 
         return array_map(
             function (array $league) {
@@ -60,7 +66,7 @@ class PoeWebsiteHttpClient
 
     public function getMods(): array
     {
-        $mods = $this->client->request('GET', 'https://www.pathofexile.com/api/trade/data/stats')->toArray();
+        $mods = $this->client->request('GET', self::MODS_URL)->toArray();
 
         foreach ($mods['result'] as $mod) {
             if ('Explicit' === $mod['label']) {
@@ -85,7 +91,7 @@ class PoeWebsiteHttpClient
         $tabs = $this->client->request(
             'GET',
             sprintf(
-                'https://www.pathofexile.com/character-window/get-stash-items?accountName=%s&realm=%s&league=%s&tabs=1&tabIndex=0',
+                self::TABS_URL,
                 $username,
                 $realm,
                 $leagueId,
@@ -97,19 +103,20 @@ class PoeWebsiteHttpClient
             function (array $tab) {
                 return [
                     'id' => $tab['id'],
-                    'text' => $tab['text'],
+                    'name' => $tab['n'],
+                    'index' => $tab['i'],
                 ];
             },
             $tabs['tabs'],
         ); 
     }
 
-    public function getTabItems(string $poesessid, string $username, string $realm, string $leagueId, int $tabIndex): array
+    public function getTabWithItems(string $poesessid, string $username, string $realm, string $leagueId, int $tabIndex): array
     {
-        $tab = $this->client->request(
+        $tabs = $this->client->request(
             'GET',
             sprintf(
-                'https://www.pathofexile.com/character-window/get-stash-items?accountName=%s&realm=%s&league=%s&tabs=1&tabIndex=%d',
+                self::TAB_ITEMS_URL,
                 $username,
                 $realm,
                 $leagueId,
@@ -118,27 +125,39 @@ class PoeWebsiteHttpClient
             $this->headers($poesessid),
         )->toArray();
 
+        $tab = null;
+
+        foreach ($tabs['tabs'] as $rawTab) {
+            if ($rawTab['selected']) {
+                $tab = [
+                    'id' => $rawTab['id'],
+                    'name' => $rawTab['n'],
+                    'index' => $rawTab['i'],
+                ];
+            }
+        }
+
         $items = array_filter(
-            $tab['items'],
+            $tabs['items'],
             function (array $item) {
                 return $item['identified'];
             },
         );
 
-        return array_map(
+        $tab['items'] = array_map(
             function (array $item) {
-                if ($item['identified']) {
-                    return [
-                        'id' => $item['id'],
-                        'name' => $item['name'],
-                        'mods' => $item['explicitMods'],
-                        'ilvl' => $item['ilvl'],
-                        'baseType' => $item['baseType'],
-                    ];
-                }
+                return [
+                    'id' => $item['id'],
+                    'name' => $item['name'],
+                    'mods' => $item['explicitMods'],
+                    'ilvl' => $item['ilvl'],
+                    'baseType' => $item['baseType'],
+                ];
             },
             $items,
         );
+
+        return $tab;
     }
 
     private function headers(string|null $poesessid): array

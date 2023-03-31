@@ -13,7 +13,9 @@ class TabTransformer extends TransformerAbstract
         return [
             'id' => $tab->id(),
             'name' => $tab->name(),
-            'league' => $tab->league(),
+            'index' => $tab->index(),
+            'league' => $tab->leagueId(),
+            'lastSync' => $tab->lastSync()->format('d-m-Y'),
         ];
     }
 

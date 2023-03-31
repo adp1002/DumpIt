@@ -57,7 +57,7 @@ final class Version20230215190826 extends AbstractMigration
                 id VARCHAR(64) PRIMARY KEY,
                 name VARCHAR NOT NULL,
                 index SMALLINT NOT NULL,
-                league_id VARCHAR NOT NULL REFERENCES dumpit.leagues (id),
+                league_id VARCHAR NOT NULL REFERENCES dumpit.leagues (id) ON DELETE CASCADE,
                 last_sync TIMESTAMP,
                 user_id UUID REFERENCES dumpit.users (id)
             )'
@@ -66,7 +66,7 @@ final class Version20230215190826 extends AbstractMigration
         $this->addSql(
             'CREATE TABLE dumpit.items (
                 id VARCHAR(64) PRIMARY KEY,
-                tab_id VARCHAR(64) REFERENCES dumpit.tabs (id),
+                tab_id VARCHAR(64) REFERENCES dumpit.tabs (id) ON DELETE CASCADE,
                 name VARCHAR NOT NULL,
                 ilvl SMALLINT NOT NULL,
                 base_type VARCHAR NOT NULL
@@ -75,9 +75,9 @@ final class Version20230215190826 extends AbstractMigration
 
         $this->addSql(
             'CREATE TABLE dumpit.item_mods (
-                item_id VARCHAR(64) REFERENCES dumpit.items (id),
-                mod_id VARCHAR(30) REFERENCES dumpit.mods (id),
-                values JSON NOT NULL,
+                item_id VARCHAR(64) REFERENCES dumpit.items (id) ON DELETE CASCADE,
+                mod_id VARCHAR(30) REFERENCES dumpit.mods (id) ON DELETE CASCADE,
+                values JSONB NOT NULL,
                 PRIMARY KEY (item_id, mod_id)
             )'
         );
@@ -92,9 +92,9 @@ final class Version20230215190826 extends AbstractMigration
 
         $this->addSql(
             'CREATE TABLE dumpit.filter_mods (
-                filter_id UUID REFERENCES dumpit.filters (id),
-                mod_id VARCHAR(30) REFERENCES dumpit.mods (id),
-                values JSON NOT NULL,
+                filter_id UUID REFERENCES dumpit.filters (id) ON DELETE CASCADE,
+                mod_id VARCHAR(30) REFERENCES dumpit.mods (id) ON DELETE CASCADE,
+                values JSONB NOT NULL,
                 condition VARCHAR(5) NOT NULL CHECK (condition IN (\'eq\', \'gt\', \'gte\', \'lt\', \'lte\')),
                 PRIMARY KEY (filter_id, mod_id, condition)
             )'

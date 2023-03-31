@@ -8,29 +8,29 @@ class CreateFilterCommand implements Command
 {
     private string $name;
 
+    private string $userId;
+    
     private array $mods;
 
-    private string $userId;
-
-    public function __construct(string $name, array $mods, string $userId)
+    public function __construct(string $name, string $userId, array $mods)
     {
         $this->name = $name;
-        $this->mods = $mods;
         $this->userId = $userId;
+        $this->mods = $mods;
     }
 
     public function name(): string
     {
         return $this->name;
     }
+    
+    public function userId(): string
+    {
+        return $this->userId;
+    }
 
     public function mods(): array
     {
         return $this->mods;
-    }
-
-    public function userId(): string
-    {
-        return $this->userId;
     }
 }

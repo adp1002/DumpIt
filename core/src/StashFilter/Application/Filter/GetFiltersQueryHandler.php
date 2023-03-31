@@ -18,6 +18,6 @@ class GetFiltersQueryHandler implements QueryHandler
 
     public function __invoke(GetFiltersQuery $query): Collection
     {
-        return new Collection($this->filters->byUser($query->userId()), new FilterTransformer());
+        return new Collection($this->filters->byUser($query->userId()), new FilterTransformer(), 'data');
     }
 }

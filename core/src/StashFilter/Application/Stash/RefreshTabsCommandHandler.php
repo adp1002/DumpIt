@@ -34,6 +34,6 @@ class RefreshTabsCommandHandler implements CommandHandler
             $command->leagueId()
         );
 
-        $this->tabs->refreshAll($tabs);
+        $this->tabs->refresh($tabs, $command->userId(), $command->leagueId());
     }
 }

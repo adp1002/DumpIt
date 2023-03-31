@@ -23,23 +23,22 @@ class Item
     #[ORM\Column(name: 'base_type', type: 'string')]
     private string $basetype;
 
-    #[ORM\JoinColumn(name: 'tab_id', referencedColumnName: 'id', nullable: false)]
-    private string $tabId;
+    #[ORM\ManyToOne(targetEntity: Tab::class)]
+    #[ORM\JoinColumn(name: 'tab_id', referencedColumnName: 'id')]
+    private Tab $tab;
 
     #[ORM\OneToMany(targetEntity: ItemMod::class, mappedBy: 'item', cascade: ['all'])]
     /** @var ItemMod[] */
     private Collection $mods;
 
-    public function __construct(string $id, string $name, int $ilvl, string $basetype, string $tabId, array $mods)
-    {
-        $this->mods = new ArrayCollection();
-        
+    public function __construct(string $id, string $name, int $ilvl, string $basetype, Tab $tab, array $mods)
+    {      
         $this->id = $id;
         $this->name = $name;
         $this->ilvl = $ilvl;
         $this->basetype = $basetype;
-        $this->tabId = $tabId;
-        $this->mods = $mods;
+        $this->tab = $tab;
+        $this->changeMods($mods);
     }
 
     public function id(): string
@@ -55,5 +54,10 @@ class Item
     public function mods(): Collection
     {
         return $this->mods;
+    }
+
+    public function changeMods(array $mods): void
+    {
+        $this->mods = new ArrayCollection($mods);
     }
 }

@@ -25,4 +25,9 @@ class League
     {
         return $this->id;
     }
+
+    public function realm(): string
+    {
+        return $this->realm;
+    }
 }

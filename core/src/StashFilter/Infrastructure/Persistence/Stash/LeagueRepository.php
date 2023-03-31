@@ -31,7 +31,6 @@ class LeagueRepository extends ServiceEntityRepository implements LeagueReposito
         }
 
         foreach($refreshedLeagues as $league) {
-            //TODO maybe add League::fromPoeApi()
             $this->_em->persist(new League($league['id'], $league['realm']));
         }
 

@@ -9,9 +9,16 @@ use DumpIt\StashFilter\Domain\Stash\Mod;
 #[ORM\Table(name: 'filter_mods', schema: 'dumpit')]
 class FilterMod
 {
+    public const EQUAL = 'eq';
+    public const GREATER_THAN = 'gt';
+    public const GREATER_THAN_OR_EQUAL = 'gte';
+    public const LESSER_THAN = 'lt';
+    public const LESSER_THAN_OR_EQUAL = 'lte';
+
     #[ORM\Id]
-    #[ORM\Column(name: 'filter_id', type: 'string')]
-    private string $filterId;
+    #[ORM\ManyToOne(targetEntity: Filter::class)]
+    #[ORM\JoinColumn(name: 'filter_id', referencedColumnName: 'id', nullable: false)]
+    private Filter $filter;
 
     #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: Mod::class)]
@@ -24,9 +31,9 @@ class FilterMod
     #[ORM\Column(type: 'string')]
     private string $condition;
 
-    public function __construct(string $filterId, Mod $mod, array $values, string $condition)
+    public function __construct(Filter $filter, Mod $mod, array $values, string $condition)
     {
-        $this->filterId = $filterId;
+        $this->filter = $filter;
         $this->mod = $mod;
         $this->values = $values;
         $this->condition = $condition;

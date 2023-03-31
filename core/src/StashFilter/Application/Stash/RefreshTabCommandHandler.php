@@ -2,11 +2,14 @@
 
 namespace DumpIt\StashFilter\Application\Stash;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use DumpIt\Shared\Infrastructure\Bus\Command\CommandHandler;
 use DumpIt\StashFilter\Domain\Stash\Item;
 use DumpIt\StashFilter\Domain\Stash\ItemMod;
 use DumpIt\StashFilter\Domain\Stash\ItemRepositoryInterface;
 use DumpIt\StashFilter\Domain\Stash\ModRepositoryInterface;
+use DumpIt\StashFilter\Domain\Stash\TabRepositoryInterface;
 use DumpIt\StashFilter\Domain\User\UserRepositoryInterface;
 use DumpIt\StashFilter\Infrastructure\HttpClient\PoeWebsiteHttpClient;
 
@@ -20,23 +23,36 @@ class RefreshTabCommandHandler implements CommandHandler
 
     private ModRepositoryInterface $mods;
 
-    public function __construct(ItemRepositoryInterface $items, PoeWebsiteHttpClient $client, UserRepositoryInterface $users, ModRepositoryInterface $mods)
+    private TabRepositoryInterface $tabs;
+
+    public function __construct(ItemRepositoryInterface $items, PoeWebsiteHttpClient $client, UserRepositoryInterface $users, ModRepositoryInterface $mods, TabRepositoryInterface $tabs)
     {
         $this->items = $items;
         $this->client = $client;
         $this->users = $users;
         $this->mods = $mods;
+        $this->tabs = $tabs;
     }
 
     public function __invoke(RefreshTabCommand $command): void
     {
+        $tab = $this->tabs->byId($command->tabId());
+
+        if ($tab->userId() !== $command->userId()) {
+            throw new \Exception();
+        }
+
         $user = $this->users->byId($command->userId());
+        
+        $refreshedTab = $this->client->getTabWithItems($user->token(), $user->username(), $user->realm(), $tab->leagueId(), $tab->index());
 
-        $items = $this->client->getTabItems($user->token(), $user->username(), $user->realm(), $command->leagueId(), $command->tabIndex());
+        if ($tab->id() !== $refreshedTab['id']) {
+            throw new \Exception();
+        }
 
-        $items = $this->buildItems($items, $command->tabId());
+        $refreshedTab['items'] = $this->buildItems($refreshedTab['items'], $tab);
 
-        $this->items->refreshForTab($command->tabId(), $items);
+        $this->tabs->refreshTab($tab, $refreshedTab);
     }
 
     private function parseModValues(string $mod): array
@@ -55,32 +71,41 @@ class RefreshTabCommandHandler implements CommandHandler
             }
         }
 
-        return array_combine($pos, $values);
+        return array_combine($pos, $values[0]);
     }
 
-    private function buildItems($items, $tabId): array
+    private function buildItems($items, $tab): array
     {
         return array_map(
-            function (array $item) use ($tabId) {
+            function (array $item) use ($tab) {
+                $itemEntity = new Item($item['id'], $item['name'], $item['ilvl'], $item['baseType'], $tab, []);
+
                 $itemMods = [];
 
                 $mods = $this->mods->matchByNames($item['mods']);
 
-                foreach ($item['mods'] as $mod) {
-                    $totalValues = $this->parseModValues($mod);
+                //TODO Some mods might not get recognized, 
+                // rn they will be ignored but they should be
+                // logged to be dealt with properly
+
+                foreach ($mods as $mod) {
 
                     $modConfidence = -1;
                     $actualMod = null;
 
-                    foreach ($mods as $modObject) {
-                        $match = similar_text($modObject->text(), $mod) / strlen($modObject->text());
+                    foreach ($item['mods'] as $modObject) {
+                        $match = similar_text($mod->text(), $modObject) / strlen($mod->text());
 
                         if ($match > $modConfidence) {
+                            $modConfidence = $match;
                             $actualMod = $modObject;
                         }
                     }
 
-                    $modText = $actualMod->text();
+                    $totalValues = $this->parseModValues($actualMod);
+
+
+                    $modText = $mod->text();
                     $actualValues = [];
 
                     for ($i = 0; $i < strlen($modText); $i++) {
@@ -89,11 +114,15 @@ class RefreshTabCommandHandler implements CommandHandler
                         }
                     }
 
-                    $itemMods[] = new ItemMod($item['id'], $actualMod, $actualValues);
+                    $itemMods[] = (new ItemMod($itemEntity, $mod, $actualValues));
                 }
-                
 
-                return new Item($item['id'], $item['name'], $item['ilvl'], $item['baseType'], $tabId, $itemMods);
+                $itemEntity->changeMods($itemMods);
+                
+                return $itemEntity;
+
+                // TODO Doctrine is trying to persist the mods first so the FK is wrong
+                // return new Item($item['id'], $item['name'], $item['ilvl'], $item['baseType'], $tabId, $itemMods);
             },
             $items,
         );

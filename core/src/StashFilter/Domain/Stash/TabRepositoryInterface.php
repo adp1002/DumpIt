@@ -9,4 +9,8 @@ interface TabRepositoryInterface
     public function byUser(string $userId): array;
 
     public function byUserAndLeague(string $userId, string $leagueId): array;
+
+    public function refresh(array $tabs, string $userId, string $leagueId): void;
+
+    public function findAll(): array;
 }

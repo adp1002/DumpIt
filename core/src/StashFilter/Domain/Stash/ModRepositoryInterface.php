@@ -10,4 +10,7 @@ interface ModRepositoryInterface
 
     /** @return array|Mod[] */
     public function matchByNames(array $names): array;
+
+    /** @return array|Mod[] */
+    public function byIds(array $ids): array;
 }

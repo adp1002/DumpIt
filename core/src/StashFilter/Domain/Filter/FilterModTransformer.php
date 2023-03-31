@@ -6,12 +6,13 @@ use League\Fractal\TransformerAbstract;
 
 class FilterModTransformer extends TransformerAbstract
 {
+
     public function transform(FilterMod $filterMod): array
     {
         return [
             'mod' => $filterMod->mod()->text(),
             'values' => $filterMod->values(),
-            'codition' => $filterMod->condition(),
+            'condition' => $filterMod->condition(),
         ];
     }
 }

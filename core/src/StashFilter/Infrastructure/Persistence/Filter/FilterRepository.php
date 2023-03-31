@@ -1,18 +1,24 @@
 <?php declare(strict_types=1);
 
-namespace DumpIt\StashFilter\Infrastructure\Filter;
+namespace DumpIt\StashFilter\Infrastructure\Persistence\Filter;
+
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Persistence\ManagerRegistry;
 use DumpIt\StashFilter\Domain\Filter\Filter;
+use DumpIt\StashFilter\Domain\Filter\FilterMod;
 use DumpIt\StashFilter\Domain\Filter\FilterRepositoryInterface;
-use DumpIt\StashFilter\Domain\User\User;
+use DumpIt\StashFilter\Domain\Stash\ModRepositoryInterface;
+use Ramsey\Uuid\Nonstandard\Uuid;
 
 class FilterRepository extends ServiceEntityRepository implements FilterRepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry)
+    private ModRepositoryInterface $mods;
+
+    public function __construct(ManagerRegistry $registry, ModRepositoryInterface $mods)
     {
         parent::__construct($registry, Filter::class);
+
+        $this->mods = $mods;
     }
 
 	public function byId(string $id): Filter
@@ -22,28 +28,25 @@ class FilterRepository extends ServiceEntityRepository implements FilterReposito
 
     function byUser(string $userId): array
     {
-        $filters = $this->findBy(['user_id' => $userId]);
-
-        if (0 === count($filters)) {
-            //TODO Exception
-            throw new \Exception();
-        }
+        $filters = $this->findBy(['userId' => $userId], ['name' => 'ASC']);
 
         return $filters;
 	}
 
-	public function create(string $id, string $name, array $mods, User $user): void
+	public function create(string $name, string $userId, array $mods): void
     {
-        $filter = new Filter($id, $name, $mods, $user);
+        $filter = new Filter((string) Uuid::uuid4(), $name, $userId, []);
 
-        $this->persist($filter);
-        $this->flush();
+        $mods = $this->buildMods($filter, $mods);
+
+        $filter->changeMods($mods);
+
+        $this->_em->persist($filter);
+        $this->_em->flush();
 	}
 	
-	public function edit(string $id, ?string $name, ?Collection $mods): void
+	public function edit(Filter $filter, ?string $name, ?array $mods): void
     {
-        $filter = $this->byId($id);
-
         if (null !== $name) {
             $filter->changeName($name);
         }
@@ -52,7 +55,6 @@ class FilterRepository extends ServiceEntityRepository implements FilterReposito
             $filter->changeMods($mods);
         }
 
-        $this->_em->persist($filter);
         $this->_em->flush();
     }
 
@@ -64,4 +66,30 @@ class FilterRepository extends ServiceEntityRepository implements FilterReposito
         $this->_em->flush();
     }
 
+    public function canUserAccess(string $id, string $userId): bool
+    {
+        return $this->_em
+            ->getConnection()
+            ->createQueryBuilder()
+            ->select('f.user_id = :userId')
+            ->from('dumpit.filters', 'f')
+            ->where('f.id = :id')
+            ->setParameter('id', $id)
+            ->setParameter('userId', $userId)
+            ->fetchOne()
+        ;
+    }
+
+    //TODO this should not be here, rethink
+    private function buildMods(Filter $filter, array $mods): array
+    {
+        $modEntities = $this->mods->byIds(array_column($mods, 'id'));
+
+        return array_map(
+            function (array $mod) use ($filter, $modEntities) {           
+                return new FilterMod($filter, $modEntities[$mod['id']], $mod['values'], $mod['condition']);
+            },
+            $mods,
+        );
+    }
 }

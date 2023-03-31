@@ -24,16 +24,16 @@ class Tab
     private string $leagueId;
 
     #[ORM\Column(name: 'last_sync', type: 'datetime')]
-    private \DateTime|null $lastSync;
+    private \DateTime $lastSync;
 
-    #[ORM\OneToMany(targetEntity: Item::class, mappedBy: 'tab', cascade: ['all'])]
+    #[ORM\OneToMany(targetEntity: Item::class, mappedBy: 'tab', cascade: ['all'], orphanRemoval: true)]
     /** @var Collection|Item[] */
     private Collection $items;
 
     #[ORM\Column(name: 'user_id', type: 'uuid')]
     private string $userId;
 
-    public function __construct(string $id, string $name, int $index, string $leagueId, \DateTime|null $lastSync)
+    public function __construct(string $id, string $name, int $index, string $leagueId, string $userId, \DateTime $lastSync)
     {
         $this->items = new ArrayCollection();
 
@@ -41,6 +41,7 @@ class Tab
         $this->name = $name;
         $this->index = $index;
         $this->leagueId = $leagueId;
+        $this->userId = $userId;
         $this->lastSync = $lastSync;
     }
 
@@ -64,7 +65,7 @@ class Tab
         return $this->leagueId;
     }
 
-    public function lastSync(): \DateTime|null
+    public function lastSync(): \DateTime
     {
         return $this->lastSync;
     }
@@ -86,9 +87,16 @@ class Tab
         return $this;
     }
 
+    public function changeIndex(int $index): self
+    {
+        $this->index = $index;
+
+        return $this;
+    }
+
     public function changeItems(array $items): self
     {
-        $this->items = $items;
+        $this->items = new ArrayCollection($items);
 
         return $this;
     }

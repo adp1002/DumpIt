@@ -18,6 +18,6 @@ class GetModsQueryHandler implements QueryHandler
 
     public function __invoke(GetModsQuery $query): Collection
     {
-        return new Collection($this->mods->findAll(), new ModTransformer());
+        return new Collection($this->mods->findAll(), new ModTransformer(), 'data');
     }
 }

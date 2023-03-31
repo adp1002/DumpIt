@@ -10,6 +10,7 @@ class User
 {
     public const API = 'api';
     public const POESESSID = 'poesessid';
+    public const PC = 'pc';
 
     private const ALLOWED_TYPES = [self::API, self::POESESSID];
 

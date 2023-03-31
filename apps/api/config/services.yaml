@@ -31,18 +31,33 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+            - '../src/Behat/'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
     DumpIt\:
-        resource: '%kernel.project_dir%/vendor/dumpit/core/src'
+        resource: '%kernel.project_dir%/vendor/dumpit/core/src/*'
+
+    DumpIt\Api\EventListener\ExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+
+    # DumpIt\Shared\:
+    #     resource: '%kernel.project_dir%/vendor/dumpit/core/src/Shared'
+
+    # DumpIt\StashFilter\Domain\:
+    #     resource: '%kernel.project_dir%/vendor/dumpit/core/src/StashFilter/Domain'
 
     DumpIt\Api\Fixtures\:
         resource: '%kernel.project_dir%/fixtures'
 
-    League\Fractal\Manager: ~
+    League\Fractal\Manager:
+        calls:
+            - setSerializer: [ '@DumpIt\Shared\Domain\Serializer\FractalSerializer' ]
  
+    DumpIt\Shared\Domain\Serializer\FractalSerializer: ~
+
     DumpIt\StashFilter\Domain\Filter\FilterRepositoryInterface:
         class: DumpIt\StashFilter\Infrastructure\Persistence\Filter\FilterRepository
     
@@ -57,3 +72,6 @@ services:
 
     DumpIt\StashFilter\Domain\User\UserRepositoryInterface:
         class: DumpIt\StashFilter\Infrastructure\Persistence\User\UserRepository
+
+    DumpIt\StashFilter\Domain\Stash\LeagueRepositoryInterface:
+        class: DumpIt\StashFilter\Infrastructure\Persistence\Stash\LeagueRepository

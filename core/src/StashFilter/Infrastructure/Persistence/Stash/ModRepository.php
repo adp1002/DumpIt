@@ -3,6 +3,7 @@
 namespace DumpIt\StashFilter\Infrastructure\Persistence\Stash;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ManagerRegistry;
 use DumpIt\StashFilter\Domain\Stash\Mod;
 use DumpIt\StashFilter\Domain\Stash\ModRepositoryInterface;
@@ -37,6 +38,10 @@ class ModRepository extends ServiceEntityRepository implements ModRepositoryInte
 
         foreach($refreshedMods as $mod) {
             //TODO maybe add Mod::fromPoeApi()
+            if ('(Local)' === substr($mod['text'], -7)) {
+                $mod['text'] = substr($mod['text'], 0, -8);
+            }
+
             $this->_em->persist(new Mod($mod['id'], $mod['text'], substr_count($mod['text'], '#')));
         }
         
@@ -46,7 +51,8 @@ class ModRepository extends ServiceEntityRepository implements ModRepositoryInte
             DELETE FROM dumpit.mods m USING (
                 SELECT MIN(ctid) as ctid, text
                     FROM dumpit.mods 
-                    GROUP BY text HAVING COUNT(*) > 1
+                    GROUP BY text
+                    HAVING COUNT(*) > 1
             ) b
             WHERE m.text = b.text 
             AND m.ctid <> b.ctid
@@ -65,22 +71,29 @@ class ModRepository extends ServiceEntityRepository implements ModRepositoryInte
             $mods,
         );
 
+        $rsm = new ResultSetMapping();
+        $rsm->addEntityResult(Mod::class, 'm');
+        $rsm->addFieldResult('m', 'id', 'id');
+        $rsm->addFieldResult('m', 'text', 'text');
+        $rsm->addMetaResult('m', 'placeholders', 'placeholders');
+        
         $mods = $this->_em
-            ->getConnection()
-            ->createQueryBuilder()
-            ->select('m.id, m.text, m.placeholders')
-            ->from('dumpit.mods', 'm')
-            ->where('m.text SIMILAR TO :mods')
+            ->createNativeQuery('SELECT * FROM dumpit.mods m WHERE m.text SIMILAR TO :mods', $rsm)
             ->setParameter('mods', join('|', $modsRegex))
-            ->executeQuery()
-            ->fetchAllAssociative()
+            ->getResult()
         ;
 
-        return array_map(
-            function (array $mod) {
-                return new Mod($mod['id'], $mod['text'], $mod['placeholders']);
-            },
-            $mods,
-        );
+        return $mods;
+    }
+
+    public function byIds(array $ids): array
+    {
+        $mods = [];
+
+        foreach ($this->findBy(['id' => $ids]) as $mod) {
+            $mods[$mod->id()] = $mod;
+        }
+
+        return $mods;
     }
 }

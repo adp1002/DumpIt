@@ -1,0 +1,44 @@
+{
+    "tabs": [
+        {
+            "n": "Changed name tab",
+            "i": 4,
+            "id": "1",
+            "selected": true
+        }
+    ],
+    "items": [
+        {
+            "id": "10",
+            "name": "Mind Charm",
+            "baseType": "Hexclaw Talisman",
+            "ilvl": 73,
+            "identified": true,
+            "explicitMods": [
+                "+15 to Dexterity",
+                "Adds 4 to 6 Physical Damage to Attacks"
+            ]
+        },
+        {
+            "id": "11",
+            "name": "Life charm",
+            "baseType": "Hexclaw Talisman",
+            "ilvl": 73,
+            "identified": true,
+            "explicitMods": [
+                "+70 to maximum Life"
+            ]
+        },
+        {
+            "id": "12",
+            "name": "Missing mod",
+            "baseType": "Hexclaw Talisman",
+            "ilvl": 73,
+            "identified": true,
+            "explicitMods": [
+                "+15 to all Attributes",
+                "+20% to Cold Resistance"
+            ]
+        }
+    ]
+}

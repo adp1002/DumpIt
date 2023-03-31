@@ -3,31 +3,39 @@
 namespace DumpIt\Api\Fixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use DumpIt\StashFilter\Domain\Stash\Item;
-use DumpIt\StashFilter\Domain\Stash\ItemId;
-use DumpIt\StashFilter\Domain\Stash\ItemMod;
-use DumpIt\StashFilter\Domain\Stash\Mod;
-use DumpIt\StashFilter\Domain\Stash\ModId;
 use DumpIt\StashFilter\Domain\Stash\Tab;
-use DumpIt\StashFilter\Domain\Stash\TabId;
 
-class TabFixtures extends Fixture
+class TabFixtures extends Fixture implements DependentFixtureInterface
 {
+    private const ID = 0;
+    private const NAME = 1;
+    private const INDEX = 2;
+    private const LEAGUE_ID = 3;
+    private const USER_ID = 4;
+    private const DATETIME = 5;
+
+    public const DUMP_TAB_ID = '1';
+    public const BUILD_TAB_ID = '2';
+    public const TRADE_TAB_ID = '3';
+
     public function load(ObjectManager $manager)
     {
-        $tab = new Tab(TabId::from('1'), 'tab 1', null);
-        $manager->persist($tab);
+        $tabs = [
+            [self::DUMP_TAB_ID, 'DumpTab', 0, LeagueFixtures::SSF_LEAGUE_ID, UserFixtures::MAIN_USER_ID, new  \DateTime()],
+            [self::BUILD_TAB_ID, 'BuildItems', 1, LeagueFixtures::SSF_LEAGUE_ID, UserFixtures::MAIN_USER_ID, new  \DateTime()],
+            [self::TRADE_TAB_ID, 'TradeTab', 0, LeagueFixtures::SSF_LEAGUE_ID, UserFixtures::SECOND_USER_ID, new  \DateTime()],
+        ];
 
-        $item = new Item(ItemId::from('1'), 'item1', 50, 'basetype', $tab);
-        $manager->persist($item);
-
-        $mod = new Mod('mod1');
-        $manager->persist($mod);
-        
-        $itemMod = new ItemMod($item, $mod, 2);
-        $manager->persist($itemMod);
+        foreach ($tabs as $tab) {
+            $manager->persist(new Tab($tab[self::ID], $tab[self::NAME], $tab[self::INDEX], $tab[self::LEAGUE_ID], $tab[self::USER_ID], $tab[self::DATETIME]));
+        }
 
         $manager->flush();
     }
+
+	public function getDependencies() {
+        return [UserFixtures::class, LeagueFixtures::class];
+	}
 }

@@ -6,6 +6,10 @@ default:
             contexts:
                 - behatch:context:json
                 - behatch:context:rest
+                - Behat\MinkExtension\Context\MinkContext
+                - DumpIt\Api\Behat\Context\BaseContext
+                - DumpIt\Api\Behat\Context\UserContext
+                - DumpIt\Api\Behat\Context\CommandContext
 
     extensions:
         FriendsOfBehat\SymfonyExtension:

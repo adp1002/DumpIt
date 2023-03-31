@@ -5,8 +5,6 @@ namespace DumpIt\StashFilter\Domain\Filter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use DumpIt\StashFilter\Domain\User\User;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'filters', schema: 'dumpit')]
@@ -14,29 +12,24 @@ class Filter
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid')]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private string $id;
 
     #[ORM\Column(name: 'name', type: 'string')]
     private string $name;
 
-    #[ORM\OneToMany(targetEntity: FilterMod::class, mappedBy: 'item')]
-    /** @var FilterMod[] */
-    private Collection $mods;
-
-    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\Column(name: 'user_id', type: 'uuid')]
-    private User $user;
+    private string $userId;
     
-    public function __construct(string $id, string $name, array $mods, User $user)
+    #[ORM\OneToMany(targetEntity: FilterMod::class, mappedBy: 'filter', cascade: ['all'], orphanRemoval: true)]
+    /** @var Collection|FilterMod[] */
+    private Collection $mods;
+    
+    public function __construct(string $id, string $name, string $userId, array $mods)
     {
         $this->id = $id;
-
-        $this->changeMods(new ArrayCollection($mods));
         $this->changeName($name);
-
-        $this->user = $user;
+        $this->userId = $userId;
+        $this->changeMods($mods);
     }
 
     public function id(): string
@@ -54,18 +47,18 @@ class Filter
         return $this->mods;
     }
 
-    public function user(): User
-    {
-        return $this->user;
-    }
-
     public function changeName(string $name): void
     {
         $this->name = $name;
     }
-
-    public function changeMods(Collection $mods): void
+    
+    public function userId(): string
     {
-        $this->mods = $mods;
+        return $this->userId;
+    }
+
+    public function changeMods(array $mods): void
+    {
+        $this->mods = new ArrayCollection($mods);
     }
 }

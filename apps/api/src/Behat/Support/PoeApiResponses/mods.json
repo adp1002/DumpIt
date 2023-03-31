@@ -1,0 +1,29 @@
+{
+    "result": [
+        {
+            "label": "Explicit",
+            "entries": [
+                {
+                    "id": "1",
+                    "text": "# to maximum Life",
+                    "type": "explicit"
+                },
+                {
+                    "id": "3",
+                    "text": "# to Strength",
+                    "type": "explicit"
+                },
+                {
+                    "id": "4",
+                    "text": "#% increased Physical Damage",
+                    "type": "explicit"
+                },
+                {
+                    "id": "7",
+                    "text": "#% increased Lightning Damage",
+                    "type": "explicit"
+                }
+            ]
+        }
+    ]
+}

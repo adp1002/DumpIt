@@ -2,6 +2,17 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+        bind:
+            string $token: '1234'
 
     DumpIt\Api\Behat\:
         resource: '../src/Behat/*'
+
+    DumpIt\Api\Behat\Support\MockClient: ~
+
+    Behatch\Context\RestContext: ~
+
+    Behatch\HttpCall\Request: ~
+
+    Symfony\Contracts\HttpClient\HttpClientInterface:
+        class: DumpIt\Api\Behat\Support\MockClient

@@ -10,16 +10,10 @@ class RefreshTabCommand implements Command
 
     private string $userId;
 
-    private string $leagueId;
-
-    private int $tabIndex;
-
-    public function __construct(string $tabId, string $userId, string $leagueId, int $tabIndex)
+    public function __construct(string $tabId, string $userId)
     {
         $this->tabId = $tabId;
         $this->userId = $userId;
-        $this->leagueId = $leagueId;
-        $this->tabIndex = $tabIndex;
     }
 
     public function tabId(): string
@@ -30,15 +24,5 @@ class RefreshTabCommand implements Command
     public function userId(): string
     {
         return $this->userId;
-    }
-
-    public function leagueId(): string
-    {
-        return $this->leagueId;
-    }
-
-    public function tabIndex(): int
-    {
-        return $this->tabIndex;
     }
 }

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace DumpIt\StashFilter\Infrastructure\Stash;
+namespace DumpIt\StashFilter\Infrastructure\Persistence\Stash;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use DumpIt\StashFilter\Domain\Stash\Item;
@@ -16,7 +16,7 @@ class ItemRepository extends ServiceEntityRepository implements ItemRepositoryIn
 	
     public function byTab(string $id): array
     {
-        return $this->findBy(['tab' => $id]);
+        return $this->findBy(['tabId' => $id]);
 	}
 
     public function refresh(string $tabId, array $items): void
@@ -24,7 +24,10 @@ class ItemRepository extends ServiceEntityRepository implements ItemRepositoryIn
         $this->deleteByTab($tabId);
 
         foreach($items as $item) {
-            $this->_em->persist($item);
+            $this->_em->persist($item['item']);
+            $this->_em->flush();
+
+            $item['item']->changeMods($item['mods']);
         }
 
         $this->_em->flush();
@@ -33,11 +36,11 @@ class ItemRepository extends ServiceEntityRepository implements ItemRepositoryIn
     private function deleteByTab(string $tabId): void
     {
         $delete = <<<SQL
-            DELETE FROM dumpit.filter_mods
+            DELETE FROM dumpit.item_mods
             WHERE item_id IN (
                 SELECT i.id
-                FROM dumpit.items
-                WHERE tab_id = $tabId
+                FROM dumpit.items i
+                WHERE tab_id = '$tabId'
             )
         SQL;
 
@@ -48,7 +51,7 @@ class ItemRepository extends ServiceEntityRepository implements ItemRepositoryIn
         
         $delete = <<<SQL
             DELETE FROM dumpit.items
-            WHERE tab_id = $tabId
+            WHERE tab_id = '$tabId'
         SQL;
 
         $this->_em

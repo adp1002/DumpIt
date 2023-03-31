@@ -9,20 +9,21 @@ use Doctrine\ORM\Mapping as ORM;
 class ItemMod
 {
     #[ORM\Id]
-    #[ORM\Column(name: 'value', type: 'string')]
-    private string $itemId;
+    #[ORM\ManyToOne(targetEntity: Item::class)]
+    #[ORM\JoinColumn(name: 'item_id', referencedColumnName: 'id')]
+    private Item $item;
 
     #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: Mod::class)]
-    #[ORM\JoinColumn(name: 'mod_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'mod_id', referencedColumnName: 'id')]
     private Mod $mod;
 
     #[ORM\Column(type: 'json')]
     private array $values;
 
-    public function __construct(string $itemId, Mod $mod, array $values)
+    public function __construct(Item $item, Mod $mod, array $values)
     {
-        $this->itemId = $itemId;
+        $this->item = $item;
         $this->mod = $mod;
         $this->values = $values;
     }

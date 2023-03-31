@@ -28,7 +28,7 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
     {
         $user = new User($id, $username, $token);
 
-        $hashedToken= $this->passwordHasher->hashPassword($user, $token);
+        $hashedToken = $this->passwordHasher->hashPassword($user, $token);
 
         $user->setToken($hashedToken);
 
