@@ -9,6 +9,6 @@ Feature:
         When I send a "GET" request to "/api/leagues"
         Then the JSON node "data" should have 2 elements
         And the JSON nodes should contain:
-        | data[0].id | ssf-boatleague |
+        | data[0].id | ssf-boatleague    |
         | data[1].id | ssf-hc-boatleague |
 

@@ -25,7 +25,6 @@ class MockClient extends MockHttpClient
     {
         $url = preg_replace('/\%\w/', '.+', $url);
 
-
         if ('GET' !== $method) {
             return new MockResponse('{}');
         }

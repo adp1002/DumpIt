@@ -80,6 +80,17 @@ class FilterRepository extends ServiceEntityRepository implements FilterReposito
         ;
     }
 
+    public function byIds(array $ids): array
+    {
+        $tabs = [];
+
+        foreach ($this->findBy(['id' => $ids]) as $tab) {
+            $tabs[$tab->id()] = $tab;
+        }
+
+        return $tabs;
+    }
+
     //TODO this should not be here, rethink
     private function buildMods(Filter $filter, array $mods): array
     {

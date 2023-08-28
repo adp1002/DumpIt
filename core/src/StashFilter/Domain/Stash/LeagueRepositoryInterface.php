@@ -5,4 +5,6 @@ namespace DumpIt\StashFilter\Domain\Stash;
 interface LeagueRepositoryInterface
 {
     public function refresh(array $leagues): void;
+
+    public function findAll();
 }

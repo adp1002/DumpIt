@@ -3,7 +3,7 @@
 namespace DumpIt\Api\Controller\Stash;
 
 use DumpIt\Shared\Infrastructure\Bus\Query\QueryBus;
-use DumpIt\StashFilter\Application\Stash\GetTabQuery;
+use DumpIt\StashFilter\Application\Stash\FilterTabQuery;
 use League\Fractal\Manager;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,8 +11,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-#[Route('/api/tabs/{id}', name: 'get_tab', methods: 'GET')]
-class GetTabController extends AbstractController
+#[Route('/api/tabs/{id}/filter', name: 'filter_tab', methods: 'POST')]
+class FilterTabController extends AbstractController
 {
     private QueryBus $queryBus;
 
@@ -29,13 +29,9 @@ class GetTabController extends AbstractController
 
     public function __invoke(Request $request, string $id): JsonResponse
     {
-        $include = $request->get('include');
+        $payload = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        $data = $this->queryBus->query(new GetTabQuery($id, $this->security->getUser()->id()));
-
-        if (null !== $include) {
-            $this->manager->parseIncludes($include);
-        }
+        $data = $this->queryBus->query(new FilterTabQuery($id, $this->security->getUser()->id(), $payload['filters']));
 
         return new JsonResponse($this->manager->createData($data));
     }

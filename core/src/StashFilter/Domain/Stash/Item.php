@@ -51,6 +51,7 @@ class Item
         return $this->name;
     }
 
+    /** @return ItemMod[] */
     public function mods(): Collection
     {
         return $this->mods;

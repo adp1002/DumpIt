@@ -62,3 +62,22 @@ Feature:
         | data.name          | Changed name tab |
         | data.index         | 4                |
         | data.items[0].name | Mind Charm       |
+
+    Scenario: A user can apply a filter to a tab
+        Given I am logged in as "Gigachad"
+        When I send a "POST" request to "/api/tabs/1/filter" with body:
+        """
+        {"filters": ["dc3f0458-cb7f-4fe7-8991-8e9a45ae9d42"]}
+        """
+        Then the JSON node "data" should have 1 element
+        And the JSON node "data[0].mods" should have 3 elements
+        And the JSON nodes should contain:
+        | data[0].name | Amulet |
+
+    Scenario: A user can't apply a filter he has no access to to a tab
+        Given I am logged in as "Gigachad"
+        When I send a "POST" request to "/api/tabs/1/filter" with body:
+        """
+        {"filters": ["dc3f0458-cb7f-4fe7-8991-8e9a45ae9d4a"]}
+        """
+        Then the response status code should be 404

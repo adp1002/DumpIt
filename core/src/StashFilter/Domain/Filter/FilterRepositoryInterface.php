@@ -15,4 +15,6 @@ interface FilterRepositoryInterface
     public function delete(string $id): void;
 
     public function canUserAccess(string $id, string $userId): bool;
+
+    public function byIds(array $ids): array;
 }

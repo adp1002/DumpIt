@@ -13,4 +13,6 @@ interface TabRepositoryInterface
     public function refresh(array $tabs, string $userId, string $leagueId): void;
 
     public function findAll(): array;
+
+    public function refreshTab(Tab $tab, array $refreshedTab);
 }

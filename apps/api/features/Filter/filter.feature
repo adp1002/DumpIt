@@ -71,7 +71,7 @@ Feature:
         And I send a "GET" request to "/api/filters"
         Then the JSON node "data" should have 1 element
 
-    Scenario: A user can delete a filter he has no access to
+    Scenario: A user can't delete a filter he has no access to
         Given I am logged in as "Gigachad"
         When I send a "DELETE" request to "/api/filters/bf6a7fe2-2d47-4216-905b-b5f2361bde3d"
         Then the response status code should be 404

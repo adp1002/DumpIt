@@ -70,6 +70,7 @@ class Tab
         return $this->lastSync;
     }
 
+    /** @return Item[] */
     public function items(): Collection
     {
         return $this->items;

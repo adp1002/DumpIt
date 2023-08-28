@@ -23,6 +23,8 @@ class Filter
     #[ORM\OneToMany(targetEntity: FilterMod::class, mappedBy: 'filter', cascade: ['all'], orphanRemoval: true)]
     /** @var Collection|FilterMod[] */
     private Collection $mods;
+
+    private array|null $rawMods = null;
     
     public function __construct(string $id, string $name, string $userId, array $mods)
     {
@@ -42,6 +44,7 @@ class Filter
         return $this->name;
     }
 
+    /** @return FilterMod[] */
     public function mods(): Collection
     {
         return $this->mods;
@@ -60,5 +63,16 @@ class Filter
     public function changeMods(array $mods): void
     {
         $this->mods = new ArrayCollection($mods);
+    }
+
+    public function filter($rawMods): bool
+    {
+        foreach ($this->rawMods as $mod => $values) {
+            if (!array_key_exists($mod, $rawMods)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
