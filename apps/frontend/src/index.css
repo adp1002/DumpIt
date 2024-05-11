@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .btn-primary {
+        @apply bg-zinc-800 hover:bg-zinc-900 text-white font-bold py-2 px-4 rounded;
+    }
+
+    .btn-transparent {
+        @apply px-4 py-2 border rounded text-black border-black hover:border-transparent hover:text-white hover:bg-zinc-800 mt-4 lg:mt-0;
+    }
+}
