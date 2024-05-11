@@ -24,8 +24,12 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
         return $this->findBy(['username' => $identifier])[0];
 	}
 
-    public function registerUser($id, $username, $token)
+    public function registerUser(string $id, string $username, string $token): void
     {
+        if ($this->isUserAlreadyRegistered($username)) {
+            return;
+        }
+
         $user = new User($id, $username, $token);
 
         $hashedToken = $this->passwordHasher->hashPassword($user, $token);
@@ -34,5 +38,19 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
 
         $this->_em->persist($user);
         $this->_em->flush();
+    }
+
+    private function isUserAlreadyRegistered($username): bool
+    {
+        return $this->_em
+            ->getConnection()
+            ->createQueryBuilder()
+            ->select('u.user_id IS NOT NULL')
+            ->from('dumpit.api_users', 'u')
+            ->where('u.username = :username')
+            ->setParameter('username', $username)
+            ->executeQuery()
+            ->fetchOne()
+        ;
     }
 }

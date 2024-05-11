@@ -29,7 +29,13 @@ class GetFiltersController extends AbstractController
 
     public function __invoke(Request $request): JsonResponse
     {
+        $include = $request->get('include');
+
         $filter = $this->queryBus->query(new GetFiltersQuery($this->security->getUser()->id()));
+
+        if (null !== $include) {
+            $this->manager->parseIncludes($include);
+        }
 
         return new JsonResponse($this->manager->createData($filter), 201);
     }

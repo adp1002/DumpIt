@@ -11,7 +11,9 @@ class ItemTransformer extends TransformerAbstract
     public function transform(Item $item): array
     {
         return [
+            'id' => $item->id(),
             'name' => $item->name(),
+            'baseType' => $item->baseType(),
         ];
     }
 

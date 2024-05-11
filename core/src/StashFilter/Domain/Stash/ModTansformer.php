@@ -11,6 +11,7 @@ class ModTransformer extends TransformerAbstract
         return [
             'id' => $mod->id(),
             'text' => $mod->text(),
+            'placeholders' => $mod->placeholders(),
         ];
     }
 }

@@ -10,7 +10,7 @@ class PoeWebsiteHttpClient
     public const ACCOUNT_URL = 'https://www.pathofexile.com/my-account';
     public const LEAGUE_URL = 'https://www.pathofexile.com/api/leagues';
     public const MODS_URL = 'https://www.pathofexile.com/api/trade/data/stats';
-    public const TABS_URL = 'https://www.pathofexile.com/character-window/get-stash-items?accountName=%s&realm=%s&league=%s&tabs=1&tabIndex=0&tabs=true';
+    public const TABS_URL = 'https://www.pathofexile.com/character-window/get-stash-items?accountName=%s&realm=%s&league=%s&tabs=1&tabIndex=0&public=true';
     public const TAB_ITEMS_URL = 'https://www.pathofexile.com/character-window/get-stash-items?accountName=%s&realm=%s&league=%s&tabs=1&tabIndex=%d';
     
     private HttpClientInterface $client;

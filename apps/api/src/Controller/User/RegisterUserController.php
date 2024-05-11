@@ -27,9 +27,10 @@ class RegisterUserController extends AbstractController
 
     public function __invoke(Request $request): Response
     {
-        $username = $request->request->get('username');
-        $token = $request->request->get('token');
-        $type = $request->request->get('type');
+        $payload = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $username = $payload['username'];
+        $token = $payload['token'];
+        $type = $payload['type'];
 
         if (null === $username || null === $token) {
             throw new BadRequestException();

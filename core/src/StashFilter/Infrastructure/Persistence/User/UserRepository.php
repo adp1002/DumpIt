@@ -21,6 +21,12 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
 
     public function registerUser(string $userId, string $username, string $realm, string $token, string $type): User
     {
+        $user = $this->findOneBy(['username' => $username]);
+
+        if (null !== $user) {
+            return $user;
+        }
+
         $user = new User($userId, $username, $realm, $token, $type);
 
         $this->_em->persist($user);

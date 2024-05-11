@@ -70,6 +70,7 @@ class TabRepository extends ServiceEntityRepository implements TabRepositoryInte
             ->refreshSync()
         ;
 
+        $this->_em->persist($tab);
         $this->_em->flush();
     }
 }

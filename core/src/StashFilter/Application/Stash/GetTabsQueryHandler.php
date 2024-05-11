@@ -20,6 +20,12 @@ class GetTabsQueryHandler implements QueryHandler
 
 	public function __invoke(GetTabsQuery $query): Collection
     {
-        return new Collection($this->tabs->byUser($query->userId()), new TabTransformer(), 'data');
+        if (null === $query->leagueId()) {
+            $data = $this->tabs->byUser($query->userId());
+        } else {
+            $data = $this->tabs->byUserAndLeague($query->userId(), $query->leagueId());
+        }
+
+        return new Collection($data, new TabTransformer(), 'data');
 	}
 }

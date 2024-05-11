@@ -51,6 +51,11 @@ class Item
         return $this->name;
     }
 
+    public function baseType(): string
+    {
+        return $this->basetype;
+    }
+
     /** @return ItemMod[] */
     public function mods(): Collection
     {

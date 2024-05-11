@@ -28,8 +28,8 @@ class GetTabsController extends AbstractController
     }
 
     public function __invoke(Request $request): JsonResponse
-    {
-        $data = $this->queryBus->query(new GetTabsQuery($this->security->getUser()->id()));
+    {        
+        $data = $this->queryBus->query(new GetTabsQuery($this->security->getUser()->id(), $request->get('league')));
 
         return new JsonResponse($this->manager->createData($data));
     }
