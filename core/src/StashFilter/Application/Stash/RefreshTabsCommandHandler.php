@@ -34,9 +34,6 @@ class RefreshTabsCommandHandler implements CommandHandler
             $command->leagueId()
         );
 
-        $this->tabs->refresh($tabs, $command->userId(), $command->leagueId());
-
-        //TODO maybe this can be improved and refresh every tab with its items checking the last refresh date,
-        // make it more restrictive than if you refresh each tab individually
+        return $this->tabs->refresh($tabs, $command->userId(), $command->leagueId());
     }
 }

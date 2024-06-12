@@ -59,9 +59,9 @@ class RefreshTabCommandHandler implements CommandHandler
     {
         $values = [];
 
-        preg_match_all('/[+-]?\d+/', $mod, $values);
+        preg_match_all('/-?\d+/', $mod, $values);
 
-        $textA = preg_replace('/[+-]?\d+/', '#', $mod);
+        $textA = preg_replace('/\d+/', '#', $mod);
 
         $pos = [];
 
@@ -89,7 +89,6 @@ class RefreshTabCommandHandler implements CommandHandler
                 // logged to be dealt with properly
 
                 foreach ($mods as $mod) {
-
                     $modConfidence = -1;
                     $actualMod = null;
 

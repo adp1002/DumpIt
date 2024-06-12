@@ -2,11 +2,12 @@
 
 namespace DumpIt\StashFilter\Infrastructure\Persistence\Stash;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use DumpIt\StashFilter\Domain\Stash\Tab;
 use DumpIt\StashFilter\Domain\Stash\TabRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use DumpIt\StashFilter\Domain\Stash\TabTransformer;
+use League\Fractal\Resource\Collection;
 
 class TabRepository extends ServiceEntityRepository implements TabRepositoryInterface
 {
@@ -35,21 +36,18 @@ class TabRepository extends ServiceEntityRepository implements TabRepositoryInte
         return parent::findAll();
     }
 
-    public function refresh(array $refreshedTabs, string $userId, string $leagueId): void
+    public function refresh(array $refreshedTabs, string $userId, string $leagueId): Collection
     {
         $tabs = $this->byUserAndLeague($userId, $leagueId);
 
-        $refreshedIds = array_column($refreshedTabs, 'id');
-
         foreach ($tabs as $tab) {
-            $key = array_search($tab->id(), $refreshedIds);
-
-            if (false === $key) {
+            if (empty($refreshedTabs[$tab->id()])) {
                 $this->_em->remove($tab);
-            } else {
-                //TODO update tabs name, index, etc
-                unset($refreshedTabs[$key]);
+                continue;
             }
+
+            $this->updateTab($tab, $refreshedTabs[$tab->id()]);
+            unset($refreshedTabs[$tab->id()]);
         }
 
         foreach ($refreshedTabs as $tab) {
@@ -59,18 +57,28 @@ class TabRepository extends ServiceEntityRepository implements TabRepositoryInte
         }
 
         $this->_em->flush();
+
+        return new Collection($tabs, new TabTransformer(), 'data');
     }
 
     public function refreshTab(Tab $tab, array $refreshedTab)
     {
+        $this->updateTab($tab, $refreshedTab);
+        $this->_em->flush();
+    }
+
+    private function updateTab(Tab $tab, array $refreshedTab)
+    {
         $tab
             ->changeName($refreshedTab['name'])
             ->changeIndex($refreshedTab['index'])
-            ->changeItems($refreshedTab['items'])
             ->refreshSync()
         ;
 
+        if (isset($refreshedTab['items'])) {
+            $tab->changeItems($refreshedTab['items']);
+        }
+
         $this->_em->persist($tab);
-        $this->_em->flush();
     }
 }

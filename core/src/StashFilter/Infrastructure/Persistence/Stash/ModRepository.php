@@ -18,7 +18,7 @@ class ModRepository extends ServiceEntityRepository implements ModRepositoryInte
     public function findAll(): array
     {
         return parent::findAll();
-	}
+    }
 
     public function refresh(array $refreshedMods): void
     {
@@ -36,7 +36,7 @@ class ModRepository extends ServiceEntityRepository implements ModRepositoryInte
             }
         }
 
-        foreach($refreshedMods as $mod) {
+        foreach ($refreshedMods as $mod) {
             //TODO maybe add Mod::fromPoeApi()
             if ('(Local)' === substr($mod['text'], -7)) {
                 $mod['text'] = substr($mod['text'], 0, -8);
@@ -44,7 +44,7 @@ class ModRepository extends ServiceEntityRepository implements ModRepositoryInte
 
             $this->_em->persist(new Mod($mod['id'], $mod['text'], substr_count($mod['text'], '#')));
         }
-        
+
         $this->_em->flush();
 
         $deleteDupes = <<<SQL
@@ -64,9 +64,12 @@ class ModRepository extends ServiceEntityRepository implements ModRepositoryInte
     /** @return array|Mod[] */
     public function matchByNames(array $mods): array
     {
+        //TODO "reduced" mods do not exist, it's increased with a negative value.
         $modsRegex = array_map(
             function (string $mod) {
-                return preg_replace('/[+-]?\d+/', '(#|[+-]?\d+)', $mod);
+                $mod = $this->handleSpecialMods($mod);
+                $mod = '(^' . $mod . '$)';
+                return preg_replace('/[+-]?\d+/', '[+-]?(#|\d+)', $mod);
             },
             $mods,
         );
@@ -76,9 +79,15 @@ class ModRepository extends ServiceEntityRepository implements ModRepositoryInte
         $rsm->addFieldResult('m', 'id', 'id');
         $rsm->addFieldResult('m', 'text', 'text');
         $rsm->addMetaResult('m', 'placeholders', 'placeholders');
-        
+
         $mods = $this->_em
-            ->createNativeQuery('SELECT * FROM dumpit.mods m WHERE m.text SIMILAR TO :mods', $rsm)
+            ->createNativeQuery(
+                sprintf(
+                    'SELECT * FROM dumpit.mods m WHERE m.text ~ %s',
+                    "'" . join('|', $modsRegex) . "'",
+                ),
+                $rsm
+            )
             ->setParameter('mods', join('|', $modsRegex))
             ->getResult()
         ;
@@ -95,5 +104,14 @@ class ModRepository extends ServiceEntityRepository implements ModRepositoryInte
         }
 
         return $mods;
+    }
+
+    private function handleSpecialMods(string $mod)
+    {
+        if (preg_match('/^[+-]?(#|\d+)% Chance to Block$/', $mod)) {
+            return $mod . ' \(Shields\)';
+        }
+
+        return $mod;
     }
 }

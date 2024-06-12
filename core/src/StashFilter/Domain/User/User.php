@@ -75,4 +75,11 @@ class User
 
         return $this;
     }
+
+    public function changeToken(string $token): self
+    {
+        $this->token = $token;
+
+        return $this;
+    }
 }

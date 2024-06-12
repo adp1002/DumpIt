@@ -12,6 +12,8 @@ class PoeWebsiteHttpClient
     public const MODS_URL = 'https://www.pathofexile.com/api/trade/data/stats';
     public const TABS_URL = 'https://www.pathofexile.com/character-window/get-stash-items?accountName=%s&realm=%s&league=%s&tabs=1&tabIndex=0&public=true';
     public const TAB_ITEMS_URL = 'https://www.pathofexile.com/character-window/get-stash-items?accountName=%s&realm=%s&league=%s&tabs=1&tabIndex=%d';
+
+    public const REMOVE_ONLY_TAB = '(Remove-only)';
     
     private HttpClientInterface $client;
 
@@ -88,7 +90,7 @@ class PoeWebsiteHttpClient
 
     public function getTabs(string $poesessid, string $username, string $realm, string $leagueId): array
     {
-        $tabs = $this->client->request(
+        $tabsInfo = $this->client->request(
             'GET',
             sprintf(
                 self::TABS_URL,
@@ -99,16 +101,28 @@ class PoeWebsiteHttpClient
             $this->headers($poesessid),
         )->toArray();
 
-        return array_map(
+        $tabs = array_filter(
+            $tabsInfo['tabs'],
             function (array $tab) {
-                return [
-                    'id' => $tab['id'],
-                    'name' => $tab['n'],
-                    'index' => $tab['i'],
-                ];
-            },
-            $tabs['tabs'],
-        ); 
+                if (str_contains($tab['n'], self::REMOVE_ONLY_TAB)) {
+                    return false;
+                }
+
+                return true;
+            }
+        );
+
+        $indexedTabs = [];
+
+        foreach ($tabs as $tab) {
+            $indexedTabs[$tab['id']] = [
+                'id' => $tab['id'],
+                'name' => $tab['n'],
+                'index' => $tab['i'],
+            ];
+        }
+
+        return $indexedTabs;
     }
 
     public function getTabWithItems(string $poesessid, string $username, string $realm, string $leagueId, int $tabIndex): array

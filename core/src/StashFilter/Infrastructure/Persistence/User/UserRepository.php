@@ -23,7 +23,13 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     {
         $user = $this->findOneBy(['username' => $username]);
 
+        // If user was already registered update its token once it's been validated
         if (null !== $user) {
+            $user->changeToken($token);
+
+            $this->_em->persist($user);
+            $this->_em->flush();
+
             return $user;
         }
 

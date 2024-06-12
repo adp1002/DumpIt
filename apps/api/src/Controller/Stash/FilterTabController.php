@@ -29,7 +29,13 @@ class FilterTabController extends AbstractController
 
     public function __invoke(Request $request, string $id): JsonResponse
     {
+        $include = $request->get('include');
+
         $payload = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
+        if (null !== $include) {
+            $this->manager->parseIncludes($include);
+        }
 
         $data = $this->queryBus->query(new FilterTabQuery($id, $this->security->getUser()->id(), $payload['filters']));
 

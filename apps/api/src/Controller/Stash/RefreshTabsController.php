@@ -7,6 +7,7 @@ use DumpIt\StashFilter\Application\Stash\RefreshTabsCommand;
 use League\Fractal\Manager;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,8 +32,11 @@ class RefreshTabsController extends AbstractController
     {
         $payload = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         
-        $this->commandBus->dispatch(new RefreshTabsCommand($this->security->getUser()->id(), $payload['leagueId']));
+        $envelope = $this->commandBus->dispatch(new RefreshTabsCommand($this->security->getUser()->id(), $payload['leagueId']));
 
-        return new JsonResponse(null, 201);
+        $handledStamp = $envelope->last(HandledStamp::class);
+        $tabs = $handledStamp->getResult();
+
+        return new JsonResponse($this->manager->createData($tabs), 201);
     }
 }
