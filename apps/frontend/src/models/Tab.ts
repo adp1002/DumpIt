@@ -11,7 +11,7 @@ type ItemMod = {
     values: number[],
 }
 
-type RawItem = {
+export type RawItem = {
     id: string,
     name: string,
     baseType: string,

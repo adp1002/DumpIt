@@ -9,7 +9,8 @@ export const CONDITIONS: {label: string, value: string}[] = [
 export type FilterMod = {
     id: string,
     values: number[],
-    condition: string, 
+    condition: string,
+    mod: string,
 }
 
 export type Mod = {

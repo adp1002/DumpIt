@@ -1,8 +1,8 @@
-import { useState } from "react";
+import Select from 'react-select'
 
 type DropdownProps = {
-    options: { [label: string]: string | number }[],
-    initialValue?: string | number,
+    options: { [label: string]: string }[],
+    initialValue?: any,
     accessors?: { label: string, value: string },
     label?: string,
     onChange?: (value: any) => void,
@@ -16,25 +16,22 @@ export default function Dropdown({
     label = undefined,
     onChange = () => { },
     ...rest }: DropdownProps) {
-    const [value, setValue] = useState(initialValue);
-
-    return (
+        return (
         <div {...rest}>
             {label && <label className="mr-5">{label}</label>}
-            <select
-                value={value}
-                onChange={(event) => {
-                    setValue(event.target.value);
-                    onChange(event.target.value);
-                }}
-            >
-                <option className="display:none" hidden />
-                {options.map((option, i) => (
-                    <option key={i} value={option[accessors.value]}>
-                        {option[accessors.label]}
-                    </option>
-                ))}
-            </select>
+            <Select
+                options={options}
+                getOptionLabel={(option) => option[accessors.label]}
+                getOptionValue={option => option[accessors.value]}
+                defaultValue={initialValue}
+                onChange={onChange}
+                styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      borderColor: state.isFocused ? 'grey' : 'teal',
+                    }),
+                  }}
+            />
         </div>
     )
 }

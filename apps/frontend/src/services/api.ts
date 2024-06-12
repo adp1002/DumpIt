@@ -50,3 +50,13 @@ export const getLeagues = () => apiFetch('/api/leagues', 'GET');
 export const getTabs = (leagueId: string) => apiFetch(`/api/tabs?league=${leagueId}`, 'GET');
 
 export const getTab = (id: string) => apiFetch(`/api/tabs/${id}?include=items`, 'GET');
+
+export const filterTab = (tabId: string, filterIds: string[]) => apiFetch(
+    `/api/tabs/${tabId}/filter?include=mods`,
+    'POST',
+    {filters: filterIds},
+);
+
+export const refreshTabs = (leagueId: string) => apiFetch('/api/tabs/refresh', 'POST', {leagueId});
+
+export const refreshTab = (tabId: string) => apiFetch(`/api/tabs/${tabId}/refresh`, 'PUT');
